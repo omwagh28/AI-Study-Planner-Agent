@@ -1,0 +1,249 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2e000add-2f05-4900-a465-5b31e3743027",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cb4733d2-c440-487c-ac6a-a7a6b8e43571",
+              "name": "assignments",
+              "value": "ML Report - Tomorrow - Hard  DBMS Quiz - 4 Days - Medium  CN Lab - 5 Days - Easy",
+              "type": "string"
+            },
+            {
+              "id": "0d1953cd-13b8-422b-87d8-f4b50b1ad354",
+              "name": "available_hours",
+              "value": 4,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "44c0f975-5772-4484-9e68-b4aea13e04a7",
+      "name": "Student Input"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a task extraction agent.\n\nAnalyze the following assignments:\n\n{{ $json.assignments }}\n\nExtract:\n1. Assignment Name\n2. Deadline\n3. Difficulty\n\nReturn ONLY valid JSON in this format:\n\n{\n  \"tasks\": [\n    {\n      \"name\": \"\",\n      \"deadline\": \"\",\n      \"difficulty\": \"\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "9278b8ab-6c33-4ca9-a940-0fa7bdf23fac",
+      "name": "Task Extractor Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        208
+      ],
+      "id": "7ff5f5c6-fcfd-4829-9a58-930a5df35da1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pWF9q74uq05prIuS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a prioritization agent.\n\nGiven the following assignments:\n\n{{ $json.output }}\n\nRank assignments based on:\n\n1. Earliest deadline\n2. Highest difficulty\n\nReturn ONLY JSON:\n\n{\n  \"priority_order\": [\n    \"Assignment Name\"\n  ],\n  \"reason\": \"Short explanation\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "ea4660f9-c0c8-48be-8f54-c4f47da518c1",
+      "name": "Priority Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        208
+      ],
+      "id": "d0c21455-2e86-4e8c-a69e-b0635b2fe893",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pWF9q74uq05prIuS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a study planning agent.\n\nPriority ranking:\n\n{{ $json.output }}\n\nAvailable study hours:\n\n{{ $('Student Input').item.json.available_hours }}\n\nCreate a study schedule.\n\nAllocate more time to higher priority assignments.\n\nReturn only a study plan.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1328,
+        -96
+      ],
+      "id": "4315880a-8fbc-4f8d-9e6b-038c245446fb",
+      "name": "Study Planner Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        112
+      ],
+      "id": "09b4f29a-1d9c-4d7a-8baa-1a22d28a7ff4",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pWF9q74uq05prIuS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Student Input": [
+      {
+        "json": {
+          "assignments": "ML Report - Tomorrow - Hard  DBMS Quiz - 4 Days - Medium  CN Lab - 5 Days - Easy",
+          "available_hours": 4
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Student Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Student Input": {
+      "main": [
+        [
+          {
+            "node": "Task Extractor Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Task Extractor Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Task Extractor Agent": {
+      "main": [
+        [
+          {
+            "node": "Priority Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Priority Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority Agent": {
+      "main": [
+        [
+          {
+            "node": "Study Planner Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Study Planner Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "20ce961e-b3c0-462d-b1ce-d238580c2684",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e8643c115d4394e84d754dd4029fd1d2c1aaa24d268553b01ff53cb23d094540"
+  },
+  "nodeGroups": [],
+  "id": "Cy5jH9AB3zmv7NM4",
+  "tags": []
+}
