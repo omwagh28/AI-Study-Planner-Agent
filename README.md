@@ -1,5 +1,5 @@
 # AI Study Planner Agent
-
+Demo Link - https://drive.google.com/file/d/1kiUTYfdRqKTxKoWL7XGYJU7Sp_tCad_q/view?usp=sharing
 ## Project Overview
 
 AI Study Planner Agent is an Agentic AI workflow built using n8n and Google Gemini. The system helps students manage academic workloads by automatically analyzing assignments, prioritizing tasks, estimating workload and stress levels, generating study schedules, and providing productivity recommendations.
