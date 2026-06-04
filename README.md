@@ -1,242 +1,291 @@
-# AI Study Planner & Assignment Prioritizer
+# AI Study Planner Agent
 
-## Overview
+## Project Overview
 
-AI Study Planner & Assignment Prioritizer is an Agentic AI workflow built using n8n and Google Gemini. The system helps students organize their academic workload by analyzing assignments, prioritizing them based on urgency and difficulty, and generating a personalized study schedule.
+AI Study Planner Agent is an Agentic AI workflow built using n8n and Google Gemini. The system helps students manage academic workloads by automatically analyzing assignments, prioritizing tasks, estimating workload and stress levels, generating study schedules, and providing productivity recommendations.
 
-The workflow demonstrates agentic design principles such as task decomposition, specialized AI roles, workflow orchestration, and structured outputs.
-
----
-
-# Problem Statement
-
-Students often have multiple assignments with different deadlines and difficulty levels. Determining which task should be completed first and how to allocate limited study hours can be challenging.
-
-This project addresses that problem by automatically:
-
-* Extracting assignment details
-* Prioritizing assignments
-* Creating a study schedule
-* Providing actionable recommendations
+The workflow demonstrates how multiple specialized AI agents can collaborate to solve a real-world planning problem through task decomposition and workflow orchestration.
 
 ---
 
-# Objective
+## Problem Statement
 
-The objective of this workflow is to transform raw assignment information into a structured study plan through multiple specialized AI agents.
+Students often struggle to decide:
 
-Input:
+* Which assignment should be completed first
+* How to divide limited study hours
+* How to manage workload and stress
+* How to create an effective study plan
 
-* Assignment descriptions
+This project automates the entire decision-making process by using multiple AI agents working together.
+
+---
+
+## Solution
+
+The user provides:
+
+* Assignment list
 * Deadlines
 * Difficulty levels
 * Available study hours
 
+The workflow then:
+
+1. Extracts and structures tasks
+2. Prioritizes assignments
+3. Analyzes workload and stress level
+4. Creates a study schedule
+5. Generates productivity recommendations
+6. Produces a final student study report
+
+---
+
+## Workflow Architecture
+
+```text
+Manual Trigger
+      ↓
+Student Input
+      ↓
+Task Extractor Agent
+      ↓
+Priority Agent
+      ↓
+Workload Analyzer Agent
+      ↓
+Stress Level Check (IF)
+      ↓
+Study Planner Agent
+      ↓
+Recommendation Agent
+      ↓
+Final Summary Agent
+```
+
+---
+
+## Agent Responsibilities
+
+### 1. Task Extractor Agent
+
+Purpose:
+
+* Extract assignment information
+* Convert raw input into structured data
+
+Input:
+
+```json
+{
+  "assignments": "ML Report - Tomorrow - Hard ..."
+}
+```
+
 Output:
 
-* Structured assignment data
-* Priority ranking
-* Personalized study schedule
+```json
+{
+  "tasks": [
+    {
+      "name": "ML Report",
+      "deadline": "Tomorrow",
+      "difficulty": "Hard"
+    }
+  ]
+}
+```
 
 ---
 
-# Workflow Architecture
+### 2. Priority Agent
 
-Student Input
+Purpose:
 
-↓
+* Rank assignments based on urgency and difficulty
 
-Task Extractor Agent
+Output Example:
 
-↓
-
-Priority Agent
-
-↓
-
-Study Planner Agent
-
----
-
-# Agent Descriptions
-
-## 1. Task Extractor Agent
-
-### Purpose
-
-Converts unstructured assignment descriptions into structured data.
-
-### Input
-
-ML Report - Tomorrow - Hard
-
-DBMS Quiz - 4 Days - Medium
-
-CN Lab - 5 Days - Easy
-
-### Output
-
-* Assignment Name
-* Deadline
-* Difficulty
-
-### Role
-
-This agent acts as the information extraction layer of the workflow.
+```json
+{
+  "priority_order": [
+    "ML Report",
+    "DBMS Quiz",
+    "CN Lab"
+  ]
+}
+```
 
 ---
 
-## 2. Priority Agent
+### 3. Workload Analyzer Agent
 
-### Purpose
+Purpose:
 
-Analyzes extracted assignments and determines the order in which tasks should be completed.
+* Estimate workload intensity
+* Estimate stress level
+* Identify the most challenging assignment
 
-### Decision Factors
+Output Example:
 
-* Deadline urgency
-* Assignment difficulty
-
-### Output
-
-Priority ranking of assignments.
-
-### Role
-
-This agent performs reasoning and prioritization.
+```json
+{
+  "workload_level": "High",
+  "stress_level": "High"
+}
+```
 
 ---
 
-## 3. Study Planner Agent
+### 4. Stress Level Check (IF Node)
 
-### Purpose
+Purpose:
 
-Creates a study schedule based on assignment priorities and available study hours.
+* Demonstrates deterministic workflow control
+* Routes workflow based on workload analysis
 
-### Input
-
-* Priority ranking
-* Available study hours
-
-### Output
-
-A detailed study plan with time allocation for each assignment.
-
-### Role
-
-This agent converts priorities into actionable recommendations.
+This node represents traditional rule-based logic working alongside AI reasoning.
 
 ---
 
-# Sample Execution
+### 5. Study Planner Agent
 
-## Input
+Purpose:
 
-Assignments:
+* Allocate available study hours
+* Generate a personalized study schedule
 
-* ML Report – Tomorrow – Hard
-* DBMS Quiz – 4 Days – Medium
-* CN Lab – 5 Days – Easy
+Output Example:
 
-Available Study Hours:
-
-* 4 Hours
-
----
-
-## Priority Ranking Generated
-
-1. ML Report
-2. DBMS Quiz
-3. CN Lab
+* ML Report → 2.5 Hours
+* DBMS Quiz → 1 Hour
+* CN Lab → 0.5 Hour
 
 ---
 
-## Study Plan Generated
+### 6. Recommendation Agent
 
-00:00 – 02:00 → ML Report
+Purpose:
 
-02:00 – 03:15 → DBMS Quiz
+* Generate productivity recommendations
+* Suggest effective study techniques
+* Warn against common mistakes
 
-03:15 – 04:00 → CN Lab
+Example Recommendations:
 
----
-
-# Technologies Used
-
-## n8n
-
-Used for workflow orchestration and agent coordination.
-
-## Google Gemini
-
-Used as the Large Language Model powering all AI agents.
-
-## Gemini Flash Model
-
-Provides reasoning, extraction, prioritization, and planning capabilities.
+* Use focused study sessions
+* Break tasks into milestones
+* Avoid multitasking
 
 ---
 
-# Agentic AI Concepts Demonstrated
+### 7. Final Summary Agent
 
-This project demonstrates the following Agentic AI concepts:
+Purpose:
 
-* Task Decomposition
-* Multi-Agent Workflow Design
-* Specialized Agent Roles
-* Sequential Reasoning
-* Structured Outputs
-* Workflow Orchestration
-* AI-Powered Planning
-* Decision Making
+* Consolidate results
+* Present a clean student study report
 
----
+Final Output Includes:
 
-# Why This Is Agentic AI
-
-This system is not a simple chatbot.
-
-Instead of solving the entire problem with a single prompt, the workflow breaks the problem into multiple specialized stages:
-
-1. Information Extraction
-2. Prioritization
-3. Planning
-
-Each agent performs a distinct responsibility and passes its output to the next agent, creating a collaborative multi-agent workflow.
+* Priority Task
+* Workload Status
+* Study Plan
+* Recommendations
+* Motivation
 
 ---
 
-# Future Improvements
+## Technologies Used
 
-Potential enhancements include:
-
-* Google Calendar Integration
-* Deadline Notifications
-* Email Reminders
-* Team Project Planning
-* Dynamic Schedule Optimization
-* Mobile Application Integration
+* n8n
+* Google Gemini API
+* Agentic AI Workflow Design
+* Prompt Engineering
 
 ---
 
-# Repository Contents
+## Key Agentic AI Concepts Demonstrated
 
-README.md
+### Task Decomposition
 
-workflow.json
+Large planning problems are broken into smaller specialized tasks.
 
-screenshots/
+### Multi-Agent Collaboration
 
-* workflow.png
-* extractor-output.png
-* priority-output.png
-* planner-output.png
+Multiple AI agents work together to solve a single objective.
+
+### Workflow Orchestration
+
+n8n coordinates information flow between agents.
+
+### Hybrid Intelligence
+
+Combines:
+
+* AI reasoning
+* Deterministic IF-node logic
+
+### Personalized Planning
+
+Each workflow execution generates a customized plan based on user inputs.
 
 ---
 
-# Author
+## Sample Input
 
-Developed as part of the Agentic Workflow Design and n8n Demo Assignment.
+```json
+{
+  "assignments": "ML Report - Tomorrow - Hard DBMS Quiz - 4 Days - Medium CN Lab - 5 Days - Easy",
+  "available_hours": 4
+}
+```
 
-Built using n8n and Google Gemini.
+---
+
+## Sample Output
+
+```text
+STUDENT STUDY REPORT
+
+Priority Task:
+ML Report
+
+Workload Status:
+High
+
+Study Plan:
+1. ML Report - 2.5 Hours
+2. DBMS Quiz - 1 Hour
+3. CN Lab - 0.5 Hour
+
+Recommendations:
+- Use focused study sessions
+- Break tasks into milestones
+- Avoid multitasking
+
+Motivation:
+Stay consistent and focus on one task at a time.
+```
+
+---
+
+## Screenshots
+
+Screenshots of workflow execution are available in the screenshots folder.
+
+---
+
+## Future Improvements
+
+* Calendar integration
+* Google Tasks integration
+* Email reminders
+* Dynamic workload tracking
+* Multi-day study planning
+
+---
+
+## Author
+
+Om Waghchavare

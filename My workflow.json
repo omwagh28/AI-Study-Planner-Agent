@@ -19,7 +19,7 @@
             {
               "id": "cb4733d2-c440-487c-ac6a-a7a6b8e43571",
               "name": "assignments",
-              "value": "ML Report - Tomorrow - Hard  DBMS Quiz - 4 Days - Medium  CN Lab - 5 Days - Easy",
+              "value": "{   \"assignments\": [     {       \"task\": \"ML Report\",       \"deadline\": \"Tomorrow\",       \"difficulty\": \"Hard\"     },     {       \"task\": \"DBMS Quiz\",       \"deadline\": \"4 Days\",       \"difficulty\": \"Medium\"     },     {       \"task\": \"CN Lab\",       \"deadline\": \"5 Days\",       \"difficulty\": \"Easy\"     }   ],   \"available_hours\": 4 }",
               "type": "string"
             },
             {
@@ -58,6 +58,7 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-2.5-flash",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
@@ -92,6 +93,7 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-2.5-flash",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
@@ -112,7 +114,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are a study planning agent.\n\nPriority ranking:\n\n{{ $json.output }}\n\nAvailable study hours:\n\n{{ $('Student Input').item.json.available_hours }}\n\nCreate a study schedule.\n\nAllocate more time to higher priority assignments.\n\nReturn only a study plan.",
+        "text": "=You are an intelligent study planning agent.\n\nPriority Information:\n\n{{ $('Priority Agent').item.json.output }}\n\nWorkload Analysis:\n\n{{ $json.output }}\n\nAvailable Study Hours:\n\n{{ $('Student Input').item.json.available_hours }}\n\nCreate a personalized study schedule.\n\nRequirements:\n\n1. Allocate more time to higher priority assignments.\n2. Consider workload and stress level.\n3. Provide a clear schedule.\n4. Include one productivity recommendation.\n\nReturn only plain text.",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -126,6 +128,7 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-2.5-flash",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
@@ -136,6 +139,144 @@
       ],
       "id": "09b4f29a-1d9c-4d7a-8baa-1a22d28a7ff4",
       "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pWF9q74uq05prIuS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a workload analysis agent.\n\nGiven the assignment priorities:\n\n{{ $json.output }}\n\nAnalyze:\n\n1. Overall workload level (Low, Medium, High)\n2. Stress level (Low, Medium, High)\n3. Most challenging assignment\n4. One sentence explanation\n\nReturn ONLY JSON in this format:\n\n{\n  \"workload_level\": \"\",\n  \"stress_level\": \"\",\n  \"most_challenging_assignment\": \"\",\n  \"explanation\": \"\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "ab061890-6b7e-4acf-bb1c-5789e6764aff",
+      "name": "Workload Analyzer Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        992,
+        208
+      ],
+      "id": "5afe884b-0ae6-46b1-81b5-b6fa5e9716eb",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pWF9q74uq05prIuS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b85f45bd-dc7c-4fc9-bf47-314d18c527b2",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Medium",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1472,
+        0
+      ],
+      "id": "65fad6af-28e6-4393-928e-17986e2ec571",
+      "name": "Stress Level Check"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a student productivity coach.\n\nBased on the following study plan:\n\n{{ $json.output }}\n\nProvide:\n\n1. Three productivity tips\n2. One common mistake to avoid\n3. One motivational statement\n\nReturn clean text only.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1680,
+        96
+      ],
+      "id": "be2bbf13-df2e-4c46-9e51-5164e0c90982",
+      "name": "Recommendation Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1552,
+        304
+      ],
+      "id": "361180fa-0a5f-4161-b2e1-caa14897d10f",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pWF9q74uq05prIuS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the final presentation agent.\n\nYour job is NOT to summarize.\n\nYour job is to present the study plan and recommendations in a clean dashboard format.\n\nStudy Plan:\n\n{{ $('Study Planner Agent').item.json.output }}\n\nRecommendations:\n\n{{ $('Recommendation Agent').item.json.output }}\n\nGenerate output EXACTLY in this format:\n\n==================================================\nSTUDENT STUDY REPORT\n==================================================\n\nPRIORITY TASK:\n<task name>\n\nWORKLOAD:\n<High/Medium/Low>\n\nSTUDY PLAN:\n\n1. <task> - <time allocated>\n2. <task> - <time allocated>\n3. <task> - <time allocated>\n\nRECOMMENDATIONS:\n\n• <recommendation 1>\n• <recommendation 2>\n• <recommendation 3>\n\nMOTIVATION:\n\n<one sentence>\n\nRules:\n- DO NOT create new recommendations.\n- DO NOT summarize.\n- USE the study schedule provided.\n- USE the recommendations provided.\n- Keep output under 150 words.\n- Make it look like a dashboard/report.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2032,
+        96
+      ],
+      "id": "57805294-2834-4b4b-981e-9b91fcddd88b",
+      "name": "Final Summary Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1904,
+        304
+      ],
+      "id": "c083acfc-ff5e-4ac1-9a51-9705e3e97b88",
+      "name": "Google Gemini Chat Model5",
       "credentials": {
         "googlePalmApi": {
           "id": "pWF9q74uq05prIuS",
@@ -214,7 +355,7 @@
       "main": [
         [
           {
-            "node": "Study Planner Agent",
+            "node": "Workload Analyzer Agent",
             "type": "main",
             "index": 0
           }
@@ -231,6 +372,84 @@
           }
         ]
       ]
+    },
+    "Workload Analyzer Agent": {
+      "main": [
+        [
+          {
+            "node": "Stress Level Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Workload Analyzer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stress Level Check": {
+      "main": [
+        [
+          {
+            "node": "Study Planner Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Recommendation Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recommendation Agent": {
+      "main": [
+        [
+          {
+            "node": "Final Summary Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Final Summary Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Study Planner Agent": {
+      "main": [
+        [
+          {
+            "node": "Recommendation Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -238,7 +457,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "20ce961e-b3c0-462d-b1ce-d238580c2684",
+  "versionId": "86189343-6bf8-4889-8a18-93ddee8eaa4b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e8643c115d4394e84d754dd4029fd1d2c1aaa24d268553b01ff53cb23d094540"
